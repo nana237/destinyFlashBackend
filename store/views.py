@@ -11,8 +11,8 @@ from store.serializers import MovieSerializer,MovieMiniSerializer,PersonSerializ
 from store.serializers import AGENT_DESTINYSerializer,CLIENTSerializer,LIVREURSerializer,PRESTATAIRESerializer,MARQUESerializer,CATEGORIESerializer
 from .models import Movie,Person,Reporter,POINT_DE_RETRAIT,AGENT_DESTINY,CLIENT,LIVREUR,PRESTATAIRE,MARQUE,CATEGORIE
 from store.serializers import SOUS_CATEGORIESerializer,PANIERSerializer,EVENEMENTSerializer,RETOURSerializer,COMMANDESerializer,ARTICLESerializer
-from store.serializers import CARACTERISTIQUESerializer,DETAIL_COMMANDESerializer,LIVRAISONSerializer,NOTIFICATIONSerializer,VERSEMENTSerializer,FACTURESerializer
-from .models import SOUS_CATEGORIE,PANIER,EVENEMENT,RETOUR,COMMANDE,ARTICLE,CARACTERISTIQUE,DETAIL_COMMANDE,LIVRAISON,NOTIFICATION,VERSEMENT,FACTURE
+from store.serializers import CARACTERISTIQUESerializer,DETAIL_COMMANDESerializer,LIVRAISONSerializer,NOTIFICATIONSerializer,VERSEMENTSerializer,FACTURESerializer,DETAIL_P_ASerializer,DET_COMSerializer
+from .models import SOUS_CATEGORIE,PANIER,EVENEMENT,RETOUR,COMMANDE,ARTICLE,CARACTERISTIQUE,DETAIL_COMMANDE,LIVRAISON,NOTIFICATION,VERSEMENT,FACTURE,DETAIL_P_A,DET_COM
 from rest_framework.response import Response
 
 class FACTUREViewSet (viewsets.ModelViewSet):
@@ -118,6 +118,15 @@ class COMMANDEViewSet (viewsets.ModelViewSet):
         serializer = COMMANDESerializer(commandes, many=True)
         return Response(serializer.data)
 
+class DET_COMViewSet (viewsets.ModelViewSet):
+    queryset = DET_COM.objects.all()
+    serializer_class = DET_COMSerializer
+
+    def list(self, request, *args, **kwargs):
+        detcoms = DET_COM.objects.all()
+        serializer = DET_COMSerializer(detcoms, many=True)
+        return Response(serializer.data)
+
 class RETOURViewSet (viewsets.ModelViewSet):
     queryset = RETOUR.objects.all()
     serializer_class = RETOURSerializer
@@ -145,6 +154,15 @@ class PANIERViewSet (viewsets.ModelViewSet):
         serializer = PANIERSerializer(paniers, many=True)
         return Response(serializer.data)
 
+class DETAIL_P_AViewSet (viewsets.ModelViewSet):
+    queryset = DETAIL_P_A.objects.all()
+    serializer_class = DETAIL_P_ASerializer
+
+    def list(self, request, *args, **kwargs):
+        detail_p_as = DETAIL_P_A.objects.all()
+        serializer = DETAIL_P_ASerializer(detail_p_as, many=True)
+        return Response(serializer.data)
+
 class SOUS_CATEGORIEViewSet (viewsets.ModelViewSet):
     queryset = SOUS_CATEGORIE.objects.all()
     serializer_class = SOUS_CATEGORIESerializer
@@ -153,6 +171,16 @@ class SOUS_CATEGORIEViewSet (viewsets.ModelViewSet):
         sous_categories = SOUS_CATEGORIE.objects.all()
         serializer = SOUS_CATEGORIESerializer(sous_categories, many=True)
         return Response(serializer.data)
+
+    def post(self, request, *args, **kwargs):
+        libSCat = request.data['libSCat']
+        photoSCat = request.data['photoSCat']
+        categorie = request.data['categorie']
+        
+        CATEGORIE.objects.create(libSCat=libSCat,photoSCat=photoSCat,categorie=categorie)
+
+        return HttpResponse({'message': 'sous_categorie created'}, status=200)
+
 
 class CATEGORIEViewSet (viewsets.ModelViewSet):
     queryset = CATEGORIE.objects.all()
@@ -163,6 +191,15 @@ class CATEGORIEViewSet (viewsets.ModelViewSet):
         serializer = CATEGORIESerializer(categories, many=True)
         return Response(serializer.data)
 
+    def post(self, request, *args, **kwargs):
+        libCat = request.data['libCat']
+        photoCat = request.data['photoCat']
+        
+        CATEGORIE.objects.create(libCat=libCat,photoCat=photoCat)
+
+        return HttpResponse({'message': 'categorie created'}, status=200)
+
+
 class MARQUEViewSet (viewsets.ModelViewSet):
     queryset = MARQUE.objects.all()
     serializer_class = MARQUESerializer
@@ -171,6 +208,14 @@ class MARQUEViewSet (viewsets.ModelViewSet):
         marques = MARQUE.objects.all()
         serializer = MARQUESerializer(marques, many=True)
         return Response(serializer.data)
+
+    def post(self, request, *args, **kwargs):
+        libMarq = request.data['libMarq']
+        photoMarq = request.data['photoMarq']
+        
+        CATEGORIE.objects.create(libMarq=libMarq,photoMarq=photoMarq)
+
+        return HttpResponse({'message': 'marque created'}, status=200)
 
 class PRESTATAIREViewSet (viewsets.ModelViewSet):
     queryset = PRESTATAIRE.objects.all()

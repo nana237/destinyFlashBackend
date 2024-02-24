@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import Movie,Person,Reporter,POINT_DE_RETRAIT,AGENT_DESTINY,CLIENT,LIVREUR,PRESTATAIRE,MARQUE,CATEGORIE
 from .models import SOUS_CATEGORIE,PANIER,EVENEMENT,RETOUR,COMMANDE,ARTICLE,CARACTERISTIQUE,DETAIL_COMMANDE,LIVRAISON
-from .models import NOTIFICATION,VERSEMENT,FACTURE
+from .models import NOTIFICATION,VERSEMENT,FACTURE,DETAIL_P_A,DET_COM
 # Register your models here.
 
 admin.site.register(Movie)
@@ -27,4 +27,6 @@ admin.site.register(LIVRAISON)
 admin.site.register(NOTIFICATION)
 admin.site.register(VERSEMENT)
 admin.site.register(FACTURE)
+admin.site.register(DETAIL_P_A)
+admin.site.register(DET_COM)
 

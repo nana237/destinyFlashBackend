@@ -193,7 +193,9 @@ class COMMANDE(models.Model):
     descriptionCmd = models.CharField(max_length=256)
     montantLivraisonCmd = models.IntegerField()
     client = models.ForeignKey('CLIENT', on_delete=models.CASCADE)
-    articles = models.ManyToManyField('ARTICLE')
+    # articles = models.ManyToManyField('ARTICLE')
+    articles = models.ManyToManyField('ARTICLE', through = 'DET_COM', through_fields=('commande','article'), blank= True, null = True)
+
     caracteristiques = models.ManyToManyField(CARACTERISTIQUE, through = 'DETAIL_COMMANDE', through_fields=('commande','caracteristique'), blank= True, null = True)
 
     def __str__(self):
@@ -201,6 +203,25 @@ class COMMANDE(models.Model):
 
     class Meta:
         ordering = ['libCmd']
+
+class DET_COM(models.Model):
+    commande = models.ForeignKey(COMMANDE, on_delete = models.CASCADE)
+    article = models.ForeignKey('ARTICLE', on_delete = models.CASCADE, blank=True,null=True)
+  #  qte_Commander = models.IntegerField()
+    qteCom = models.IntegerField()
+    
+    
+    couleurCom = models.CharField(max_length=50, blank=True,null=True)
+    tailleCom = models.CharField(max_length=50, blank=True,null=True)
+    prixCom = models.IntegerField(blank=True,null=True)
+    autreDetailCom = models.CharField(max_length=256, blank=True,null=True)
+    
+
+class DETAIL_COMMANDE(models.Model):
+    commande = models.ForeignKey(COMMANDE, on_delete = models.CASCADE)
+    caracteristique = models.ForeignKey(CARACTERISTIQUE, on_delete = models.CASCADE)
+    qte_Commander = models.IntegerField()
+
 
 
 
@@ -227,11 +248,6 @@ class Membership(models.Model):
     invite_reason = models.CharField(max_length=64)
 """
 
-
-class DETAIL_COMMANDE(models.Model):
-    commande = models.ForeignKey(COMMANDE, on_delete = models.CASCADE)
-    caracteristique = models.ForeignKey(CARACTERISTIQUE, on_delete = models.CASCADE)
-    qte_Commander = models.IntegerField()
 
 class RETOUR(models.Model):
 
@@ -277,7 +293,11 @@ class PANIER(models.Model):
     #idPanier = models.IntegerField()
     libPanier = models.CharField(max_length=100)
     client = models.OneToOneField('CLIENT', on_delete=models.CASCADE)
-    articles = models.ManyToManyField('ARTICLE', blank=True, null=True)
+    articles = models.ManyToManyField(
+        'ARTICLE', blank=True, null=True,
+        through='DETAIL_P_A',
+        through_fields=('panier', 'article'),
+        )
     
     def __str__(self):
         return self.libPanier
@@ -285,10 +305,31 @@ class PANIER(models.Model):
     class Meta:
         ordering = ['libPanier']
 
+class DETAIL_P_A(models.Model):
+    panier = models.ForeignKey(PANIER, on_delete=models.CASCADE)
+    article = models.ForeignKey(ARTICLE, on_delete=models.CASCADE)
+
+    qte = models.IntegerField()
+    couleur = models.CharField(max_length=50, blank=True,null=True)
+    taille = models.CharField(max_length=50, blank=True,null=True)
+    prix = models.IntegerField(blank=True,null=True)
+    autreDetail = models.CharField(max_length=256, blank=True,null=True)
+
+    def __str__(self):
+        return self.panier.libPanier
+
+    class Meta:
+        ordering = ['panier']
+
+
+def upload_sous_categorie(instance, filname):
+    return '/'.join(['photoSCat',str(instance.libSCat),filname])
+
+
 class SOUS_CATEGORIE(models.Model):
     #idSCat = models.IntegerField()
     libSCat = models.CharField(max_length=50)
-    photoSCat = models.CharField(max_length=256,null=True,blank=True)
+    photoSCat = models.ImageField(max_length=256,null=True,blank=True, upload_to=upload_sous_categorie)
     categorie = models.ForeignKey('CATEGORIE', on_delete=models.CASCADE)
 
     def __str__(self):
@@ -297,10 +338,15 @@ class SOUS_CATEGORIE(models.Model):
     class Meta:
         ordering = ['libSCat']
 
+
+def upload_categorie(instance, filname):
+    return '/'.join(['photoCat',str(instance.libCat),filname])
+
+
 class CATEGORIE(models.Model):
     #idCat = models.IntegerField()
     libCat = models.CharField(max_length=50)
-    photoCat = models.CharField(max_length=256,null=True,blank=True)
+    photoCat = models.ImageField(max_length=256,null=True,blank=True,upload_to=upload_categorie)
 
     def __str__(self):
         return self.libCat
@@ -308,10 +354,14 @@ class CATEGORIE(models.Model):
     class Meta:
         ordering = ['libCat']
 
+
+def upload_marque(instance, filname):
+    return '/'.join(['photoMarq',str(instance.libMarq),filname])
+
 class MARQUE(models.Model):
     #idMArq = models.IntegerField()
     libMarq = models.CharField(max_length=50)
-    photoMarq = models.CharField(max_length=256,null=True,blank=True)
+    photoMarq = models.ImageField(max_length=256,null=True,blank=True,upload_to=upload_marque)
 
     def __str__(self):
         return self.libMarq
@@ -392,13 +442,13 @@ class CLIENT(models.Model):
     #idC = models.IntegerField()
     nomC = models.CharField(max_length=100)
     prenomC = models.CharField(max_length=100)
-    dateNaissC = models.DateField()
+    dateNaissC = models.DateField(null=True,blank=True)
     emailC = models.EmailField(null=True,blank=True)
     sexeC = models.CharField(max_length=1, choices=SEXE_CHOICES, default=MASCULIN  )
     adresseC = models.CharField(max_length=100,null=True,blank=True)
     villeC = models.CharField(max_length=100,null=True,blank=True)
     quartierC = models.CharField(max_length=100,null=True,blank=True)
-    numCNI_C = models.CharField(max_length=25, unique = True)
+    numCNI_C = models.CharField(max_length=25, unique = True,null=True,blank=True)
     telC = models.IntegerField()
     loginC = models.CharField(max_length=100)
     motDePassC = models.CharField(max_length=50)

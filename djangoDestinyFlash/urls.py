@@ -52,6 +52,8 @@ router.register(r'livraisons',views.LIVRAISONViewSet)
 router.register(r'notifications',views.NOTIFICATIONViewSet)
 router.register(r'versements',views.VERSEMENTViewSet)
 router.register(r'factures',views.FACTUREViewSet)
+router.register(r'detail_p_as',views.DETAIL_P_AViewSet)
+router.register(r'detcoms',views.DET_COMViewSet)
 
 
 

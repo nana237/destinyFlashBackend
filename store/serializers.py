@@ -2,7 +2,7 @@ from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 from .models import Movie,Person,Reporter,POINT_DE_RETRAIT,AGENT_DESTINY,CLIENT,LIVREUR,PRESTATAIRE,MARQUE,CATEGORIE
 from .models import SOUS_CATEGORIE,PANIER,EVENEMENT,RETOUR,COMMANDE,ARTICLE,CARACTERISTIQUE,DETAIL_COMMANDE,LIVRAISON
-from .models import NOTIFICATION,VERSEMENT,FACTURE
+from .models import NOTIFICATION,VERSEMENT,FACTURE,DETAIL_P_A,DET_COM
 
 #class UserSerializer(serializers.HyperlinkedModelSerializer):
 #    class Meta:
@@ -58,6 +58,13 @@ class COMMANDESerializer(serializers.ModelSerializer):
         model = COMMANDE
         fields = ['id', 'libCmd', 'dateCmd','statusCmd','descriptionCmd','montantLivraisonCmd','client','articles','caracteristiques']
 
+class DET_COMSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DET_COM
+        fields = ['id','commande', 'article', 'qteCom','couleurCom','tailleCom','prixCom','autreDetailCom']
+
+
+
 
 class RETOURSerializer(serializers.ModelSerializer):
     class Meta:
@@ -75,6 +82,12 @@ class PANIERSerializer(serializers.ModelSerializer):
     class Meta:
         model = PANIER
         fields = ['id', 'libPanier', 'client','articles']
+
+
+class DETAIL_P_ASerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DETAIL_P_A
+        fields = ['id', 'panier', 'article','qte','couleur','taille','prix','autreDetail']
 
 
 class SOUS_CATEGORIESerializer(serializers.ModelSerializer):
@@ -98,7 +111,7 @@ class MARQUESerializer(serializers.ModelSerializer):
 class PRESTATAIRESerializer(serializers.ModelSerializer):
     class Meta:
         model = PRESTATAIRE
-        fields = ['idP','nomP','prenomP','dateNaissP','emailL','sexeP','adresseP','villeP','quartierP','numCNI_P','telP','loginP','motDePassP']
+        fields = ['id','nomP','prenomP','dateNaissP','emailP','sexeP','adresseP','villeP','quartierP','numCNI_P','telP','loginP','motDePassP']
 
 
 class LIVREURSerializer(serializers.ModelSerializer):
